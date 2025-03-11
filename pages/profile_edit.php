@@ -52,7 +52,7 @@ if (!$member['members_id']) {
 <div class="container">
     <h4 class="text-center text-muted mb-4">সদস্য তথ্য সংশোধন</h4>
 
-    <form action="<?php echo BASE_PATH; ?>/includes/update.php" method="POST" enctype="multipart/form-data">
+    <form action="<?php echo BASE_PATH; ?>/includes/profile_update.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="member_id" value="<?php echo $member['id']; ?>">
 
         <!-- সদস্য তথ্য -->

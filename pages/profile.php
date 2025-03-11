@@ -7,7 +7,7 @@ require_once BASE_PATH.'/includes/db.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['members_id'])) {
-    header("Location: login.php");
+    header("Location: /login");
     exit();
 }
 
