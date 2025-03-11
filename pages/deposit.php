@@ -42,36 +42,79 @@ function sendDepositReceipt($email, $name, $amount, $deposit_date, $payment_meth
 
         $mail->setFrom('al-barakah@addohafood.com', 'আল-বারাকাহ তহবিল');
         $mail->addAddress($email, $name);
+        $mail->addAddress('albarakah.phultala@gmail.com', 'আল-বারাকাহ এডমিন');
 
         $mail->isHTML(true);
         $mail->Subject = 'জমা রশিদ - আল-বারাকাহ তহবিল';
         
         $message = "
-        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>
-            <div style='text-align: center; margin-bottom: 20px;'>
-                <h2>আল-বারাকাহ তহবিল</h2>
-                <h3>জমা রশিদ</h3>
-            </div>
+            <div style='font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #fff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
+                <div style='margin-bottom: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 8px;'>
+                    <img src='https://barakah.addohafood.com/assets/logo.png' height='45'/>
+                    <h2 style='color: #2c3e50; margin: 0;'>আল-বারাকাহ তহবিল</h2
+                </div>
+                <h3 style='color: #34495e; margin: 10px 0 0;'>জমা রশিদ</h3>
             
-            <div style='border: 1px solid #ddd; padding: 20px; margin-bottom: 20px;'>
-                <p><strong>রশিদ নং:</strong> {$receipt_no}</p>
-                <p><strong>তারিখ:</strong> " . date('d/m/Y', strtotime($deposit_date)) . "</p>
-                <p><strong>সদস্যের নাম:</strong> {$name}</p>
-                <p><strong>মাস:</strong> {$months[$deposit_month]}</p>
-                <p><strong>বছর:</strong> {$deposit_year}</p>
-                <p><strong>জমার পরিমাণ:</strong> ৳{$amount}</p>
-                <p><strong>পেমেন্ট পদ্ধতি:</strong> {$payment_method}</p>
-                " . ($reference ? "<p><strong>রেফারেন্স:</strong> {$reference}</p>" : "") . "
-            </div>
+                <div style='display: flex; justify-content: space-between; margin-bottom: 30px;'>
+                    <div style='flex: 1;'>
+                        <p style='margin: 5px 0;'><strong>রশিদ নং:</strong> {$receipt_no}</p>
+                        <p style='margin: 5px 0;'><strong>সদস্যের নাম:</strong> {$name}</p>
+                        <p style='margin: 5px 0;'><strong>মাস:</strong> {$months[$deposit_month]}</p>
+                        <p style='margin: 5px 0;'><strong>বছর:</strong> {$deposit_year}</p>
+                    </div>
+                    <div style='flex: 1; text-align: right;'>
+                        <p style='margin: 5px 0;'><strong>তারিখ:</strong> " . date('d/m/Y', strtotime($deposit_date)) . "</p>
+                    </div>
+                </div>
             
-            <div style='text-align: center; color: #666; font-size: 12px;'>
-                <p>এই রশিদটি কম্পিউটার জেনারেটেড এবং কোনো স্বাক্ষরের প্রয়োজন নেই।</p>
-                <p>আল-বারাকাহ তহবিল<br>যোগাযোগ: ০১৯১৪৪০১৭৪৮</p>
+                <table style='width: 100%; border-collapse: collapse; margin: 20px 0; background-color: #f8f9fa; border-radius: 8px;'>
+                    <tr style='background-color: #e9ecef;'>
+                        <th style='padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;'>বিবরণ</th>
+                        <th style='padding: 12px; text-align: right; border-bottom: 2px solid #dee2e6;'>পরিমাণ</th>
+                    </tr>
+                    <tr>
+                        <td style='padding: 12px; border-bottom: 1px solid #dee2e6;'>মাসিক জমা</td>
+                        <td style='padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;'>৳{$amount}</td>
+                    </tr>
+                    <tr>
+                        <td style='padding: 12px; text-align: right;'><strong>মোট:</strong></td>
+                        <td style='padding: 12px; text-align: right; font-weight: bold; color: #28a745;'>৳{$amount}</td>
+                    </tr>
+                </table>
+            
+                <div style='background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;'>
+                    <p style='margin: 5px 0;'><strong>পেমেন্ট পদ্ধতি:</strong> {$payment_method}</p>
+                    " . ($reference ? "<p style='margin: 5px 0;'><strong>রেফারেন্স:</strong> {$reference}</p>" : "") . "
+                </div>
+            
+                <div style='text-align: center; color: #6c757d; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6;'>
+                    <p style='margin: 5px 0;'>এই রশিদটি কম্পিউটার জেনারেটেড এবং কোনো স্বাক্ষরের প্রয়োজন নেই।</p>
+                    <p style='margin: 5px 0;'>
+                        <strong>আল-বারাকাহ তহবিল</strong><br>
+                        যোগাযোগ: ০১৯১৪৪০১৭৪৮<br>
+                        ই-মেইল: albarakah.phultala@gmail.com
+                    </p>
+                </div>
             </div>
-        </div>";
+            <div style='text-align: center; margin-top: 20px;'>
+                <a href='barakah.addohafood.com/profile' style='
+                    background-color: #28a745;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-family: Arial, sans-serif;
+                    font-size: 14px;
+                '>
+                    🔽 রশিদ ডাউনলোড করুন
+                </a>
+            </div>";
 
         $mail->Body = $message;
         $mail->AltBody = strip_tags($message);
+        $mail->isHTML(true);
+        $mail->AllowEmpty = true;
 
         return $mail->send();
     } catch (Exception $e) {
@@ -150,13 +193,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
-    <style>
-        body { 
-            font-family: 'Tiro Bangla', sans-serif;
-            background-color: #f8f9fa;
-        }
-        .container { max-width: 600px; background-color: white; padding: 20px; border-radius: 10px; margin-top: 50px; }
-    </style>
+    
+    <link href="../assets/style.css" rel="stylesheet">
 </head>
 <body>
 <?php require_once BASE_PATH . '/includes/navbar.php'; ?>

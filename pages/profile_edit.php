@@ -1,36 +1,45 @@
 <?php
+ini_set('display_errors', 1); 
+error_reporting(E_ALL);
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
+// Authentication check
 if (!isset($_SESSION['members_id']) || ($_SESSION['members_id'] != 1001 && $_SESSION['members_id'] != 1002)) {
     header("location: /");
     exit();
 }
+
 require_once '../includes/db.php';
-ini_set('display_errors', 1); 
-error_reporting(E_ALL);
-
-// Get member ID from URL
-$member_id = isset($_GET['id']) ? $_GET['id'] : null;
-
-// Fetch member data
-if ($member_id) {
-    
-    $stmt = $conn->prepare("
-    SELECT * FROM applications a
-    JOIN members m ON m.application_id = a.id
-        WHERE m.members_id = ?
-    ");
-    $stmt->bind_param("s", $member_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $member = $result->fetch_assoc();
-}
 require_once '../includes/navbar.php';
 
-if (!$member['members_id']) {
-    echo "<div class='alert alert-danger'>সদস্য পাওয়া যায়নি</div>";
-    exit();
+// Get member ID from URL with validation
+$member_id = isset($_GET['members_id']) ? filter_var($_GET['members_id'], FILTER_VALIDATE_INT) : null;
+$member = null;
+$error_message = '';
+
+// Fetch member data if ID exists
+if ($member_id) {
+    try {
+        $stmt = $conn->prepare("
+            SELECT * FROM applications a
+            JOIN members m ON a.id = m.application_id 
+            WHERE a.id = ?
+        ");
+        $stmt->bind_param("s", $member_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $member = $result->fetch_assoc();
+        
+        if (!$member) {
+            $error_message = 'সদস্য পাওয়া যায়নি';
+        }
+    } catch (Exception $e) {
+        $error_message = 'তথ্য লোড করতে সমস্যা হয়েছে';
+    }
+} else {
+    $error_message = 'অবৈধ সদস্য আইডি';
 }
 ?>
 
@@ -42,15 +51,25 @@ if (!$member['members_id']) {
     <title>সদস্য তথ্য সংশোধন - আল-বারাকাহ তহবিল</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Tiro Bangla', sans-serif; }
-        .container { max-width: 800px; background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 30px; }
-    </style>
+    <link href="../assets/style.css" rel="stylesheet">
 </head>
 <body>
 
 <div class="container">
     <h4 class="text-center text-muted mb-4">সদস্য তথ্য সংশোধন</h4>
+
+    <?php if ($error_message): ?>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="alert alert-danger text-center">
+                    <h5 class="mb-0"><?php echo htmlspecialchars($error_message); ?></h5>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="members.php" class="btn btn-primary">সদস্য তালিকায় ফিরে যান</a>
+                </div>
+            </div>
+        </div>
+    <?php else: ?>
 
     <form action="<?php echo BASE_PATH; ?>/includes/profile_update.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="member_id" value="<?php echo $member['id']; ?>">
@@ -159,6 +178,7 @@ if (!$member['members_id']) {
             <a href="view-member.php?id=<?php echo $member_id; ?>" class="btn btn-secondary">বাতিল করুন</a>
         </div>
     </form>
+<?php endif; ?>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

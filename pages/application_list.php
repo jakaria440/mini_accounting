@@ -199,15 +199,8 @@ if (isset($_POST['action'])) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
-    <style>
-        body { 
-            font-family: 'Tiro Bangla', sans-serif;
-        }
-        .container { max-width: 800px; background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 30px; }
-        .navbar { width: 80%; margin: auto; }
-        .navbar-brand { margin-right: 10px; } /* Reduce space between logo and menus */
-        .action-buttons form { display: inline; }
-    </style>
+    
+    <link href="../assets/style.css" rel="stylesheet">
 </head>
 <body>
 
@@ -215,7 +208,7 @@ if (isset($_POST['action'])) {
 <?php require_once BASE_PATH.'/includes/navbar.php'; ?>
 
 <div class="container">
-    <h2 class="text-center">আবেদন তালিকা</h2>
+    <h2 class="text-center"><?= $_SERVER['REQUEST_URI'] == '/profile-update' ? 'তথ্য হালনাগাদ তালিকা' : 'আবেদন তালিকা';?></h>
     <hr>
     <?php
     // Fetch all applications from the database
@@ -230,6 +223,7 @@ if (isset($_POST['action'])) {
         echo '<th>পিতা</th>';
         echo '<th>মোবাইল নম্বর</th>';
         echo '<th>ঠিকানা</th>';
+        echo '<th>স্ট্যাটাস</th>';
         echo '<th>পদক্ষেপ</th>';
         echo '</tr>';
         echo '</thead>';
@@ -244,29 +238,34 @@ if (isset($_POST['action'])) {
             echo '<td>' . $row['mobile'] . '</td>';
             echo '<td>' . $row['present_village'] .', '.$row['present_thana'].', '.$row['present_district']. '</td>';
             echo '<td>';
-            echo '<a href="/pages/view.php?id=' . $row['id'] . '" class="btn btn-primary btn-sm" style=" font-size:9px;"><i class="fas fa-eye"></i></a> ';
-            
-            if ($row['status'] == 0) {
+             if ($row['status'] == 1) {
+                echo '<button class="btn btn-success btn-sm" disabled  style=" font-size:9px;"></i> অনুমোদিত</button>';
+             } else {
+                echo '<button class="btn btn-danger btn-sm" disabled style=" font-size:9px;"></i> বাতিলকৃত</button>';
+             }
+
+            echo '</div></td><td>';
+            echo '<div class="d-flex">';
+            if ($row['status'] == 0 && $_SERVER['REQUEST_URI'] == '/applications') {
                 echo '<div class="action-buttons" style="display: inline-block;">
                     <form method="POST" style="display: inline;">
                         <input type="hidden" name="action" value="accept">
                         <input type="hidden" name="id" value="' . $row['id'] . '">
-                        <button type="submit" class="btn btn-success btn-sm" style=" font-size:9px;"><i class="fas fa-check"></i></button>
+                        <button type="submit" class="btn btn-success btn-sm" style=" font-size:10px;"><i class="fas fa-check"></i></button>
                     </form>
                     <form method="POST" style="display: inline;">
                         <input type="hidden" name="action" value="reject">
                         <input type="hidden" name="id" value="' . $row['id'] . '">
-                        <button type="submit" class="btn btn-danger btn-sm" style=" font-size:9px;"><i class="fas fa-times"></i></button>
+                        <button type="submit" class="btn btn-danger btn-sm" style=" font-size:10px;"><i class="fas fa-times"></i></button>
                     </form>
                 ';
-             } elseif ($row['status'] == 1) {
-                echo '<button class="btn btn-success btn-sm" disabled  style=" font-size:9px;"></i> Approved</button>';
-             } else {
-                echo '<button class="btn btn-danger btn-sm" disabled style=" font-size:9px;"></i> Rejected</button>';
              }
-
-            echo '</div></td>';
-            echo '</tr>';
+             
+            echo '<a href="/pages/view.php?id=' . $row['id'] . '" class="btn btn-primary btn-sm" style="font-size:10px;"><i class="fas fa-eye"></i></a> &nbsp';
+            if ($row['status'] == 1 && $_SERVER['REQUEST_URI'] == '/profile-update') {
+                echo '<a href="pages/profile_edit.php?members_id=' . $row['id'] . '" class="btn btn-primary btn-sm" style="font-size:11px;"><i class="fas fa-edit"></i></a> ';
+            }
+            echo '</div></td></tr>';
         }
 
         echo '</tbody>';
