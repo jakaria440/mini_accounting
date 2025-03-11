@@ -30,10 +30,10 @@ $member = $result->fetch_assoc();
 
 // Fetch deposit history
 $depositStmt = $conn->prepare("
-    SELECT deposit_date, payment_method, amount, reference
-    FROM deposits 
-    WHERE member_id = ?
-    ORDER BY deposit_date DESC
+    SELECT d.id, d.deposit_date, d.payment_method, d.amount, d.reference
+    FROM deposits d 
+    WHERE d.member_id = ?
+    ORDER BY d.deposit_date DESC
 ");
 $depositStmt->bind_param("i", $member['member_id']);
 $depositStmt->execute();
@@ -117,7 +117,14 @@ $deposits = $depositStmt->get_result();
             </div>
         </div>
 
-        <h5 class="mt-4 mb-3">জমার ইতিহাস</h5>
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mt-4 mb-3">জমার ইতিহাস</h5>
+            <button onclick="downloadStatement(<?php echo $member['member_id']; ?>)" 
+                    class="btn btn-primary btn-sm">
+                <i class="fas fa-file-download"></i> পূর্ণ বিবরণী
+            </button>
+        </div>
+
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead>
@@ -126,6 +133,7 @@ $deposits = $depositStmt->get_result();
                         <th>পেমেন্ট পদ্ধতি</th>
                         <th>পরিমাণ</th>
                         <th>রেফারেন্স</th>
+                        <th>অ্যাকশন</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -136,11 +144,17 @@ $deposits = $depositStmt->get_result();
                                 <td><?php echo htmlspecialchars($deposit['payment_method']); ?></td>
                                 <td class="amount-cell">৳ <?php echo number_format($deposit['amount'], 2); ?></td>
                                 <td><?php echo htmlspecialchars($deposit['reference'] ?: '-'); ?></td>
+                                <td>
+                                    <button onclick="downloadReceipt(<?php echo $deposit['id']; ?>)" 
+                                            class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-receipt"></i> রশিদ
+                                    </button>
+                                </td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="4" class="text-center">কোনো জমার তথ্য পাওয়া যায়নি</td>
+                            <td colspan="5" class="text-center">কোনো জমার তথ্য পাওয়া যায়নি</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -149,6 +163,16 @@ $deposits = $depositStmt->get_result();
     </div>
 </div>
 
+<!-- Add before closing body tag -->
+<script>
+function downloadStatement(memberId) {
+    window.location.href = `../includes/generate-statement.php?member_id=${memberId}&token=<?php echo hash('sha256', $member['members_id']); ?>`;
+}
+
+function downloadReceipt(depositId) {
+    window.location.href = `../includes/generate-receipt.php?deposit_id=${depositId}&token=<?php echo hash('sha256', $member['members_id']); ?>`;
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
