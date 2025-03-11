@@ -10,9 +10,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-
 require BASE_PATH.'/vendor/autoload.php';
-
 
 require_once BASE_PATH.'/includes/db.php';
 
