@@ -2,9 +2,7 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-    ini_set('display_errors', 1); 
 
-    error_reporting(E_ALL);
 require_once BASE_PATH . '/includes/db.php';
 
 $error = '';
@@ -24,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if (password_verify($password, $hashed_password)) {
             $_SESSION['members_id'] = $members_id;
-            header("Location: /applications");
+            header("Location: /profile");
             exit();
         } else {
             $error = 'Invalid password.';
@@ -55,7 +53,7 @@ $conn->close();
         }
         .container { max-width: 400px; background-color: white; padding: 20px; border-radius: 10px; margin-top: 50px; }
         .navbar { width: 80%; margin: auto; }
-        .navbar-brand { margin-right: 10px; } /* Reduce space between logo and menus */
+        .navbar-brand { margin-right: 10px; } 
     </style>
 </head>
 <body>
@@ -72,6 +70,7 @@ $conn->close();
             <?php echo $error; ?>
         </div>
     <?php endif; ?>
+    <?= !empty($_SESSION['members_id']) ? 'আপনি কিন্তু অলরেডি লগড ইন অবস্থায় আছেন, অন্য আইডি দিয়ে প্রবেশ করতে চান?' : ''?>
     <form method="POST" action="">
         <div class="mb-3">
             <label for="members_id" class="form-label">সদস্য আইডি</label>

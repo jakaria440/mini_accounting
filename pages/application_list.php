@@ -1,12 +1,18 @@
 <?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['members_id']) || ($_SESSION['members_id'] != 1001 && $_SESSION['members_id'] != 1002)) {
+    header("location: /");
+    exit();
+}
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
+
 require BASE_PATH.'/vendor/autoload.php';
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+
 
 require_once BASE_PATH.'/includes/db.php';
 

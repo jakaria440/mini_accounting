@@ -2,9 +2,7 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-    ini_set('display_errors', 1); 
 
-    error_reporting(E_ALL);
 require_once BASE_PATH.'/includes/db.php';
 
 // Check if user is logged in
